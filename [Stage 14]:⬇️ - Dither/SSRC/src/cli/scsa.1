@@ -1,0 +1,63 @@
+.\" Man page for scsa
+.TH scsa 1 "September 2025" "SSRC" "User Commands"
+.SH NAME
+scsa \- command-line spectrum analyzer for automated testing
+.SH SYNOPSIS
+.B scsa
+[\fIoptions\fR] \fI<source file name>\fR \fI<first position>\fR \fI<last position>\fR \fI<interval>\fR
+.SH DESCRIPTION
+.B scsa
+is a command-line spectrum analyzer. While it can be used as a general-purpose analyzer, it is primarily designed for automated testing and verification, for example in a CI environment.
+.P
+Its main purpose is to check audio spectra against predefined criteria, making it ideal for automated quality assurance in a CI/CD pipeline. It is cross-platform and dependency-free. When a test fails,
+.B scsa
+can generate an SVG image of the spectrum for debugging.
+.P
+Unlike many standard analyzers, all internal processing is performed in double precision. This minimizes the impact of floating-point noise, allowing for highly accurate measurements. It also uses a 7-term Blackman-Harris window function, which provides excellent dynamic range and frequency resolution.
+.SH OPTIONS
+.TP
+\fB--log2dftlen <log2dftlen>\fR
+Set the log2 of the DFT length. Default: 12.
+.TP
+\fB--check <check file>\fR
+Specify a file containing spectrum check criteria.
+.TP
+\fB--svgout <svg file name>\fR
+Specify the output SVG file name for the spectrum graph. An SVG is generated if a check file is provided and the test fails, or if no check file is provided at all.
+.TP
+\fB--debug\fR
+Print detailed debugging information during processing.
+.SH "CHECK FILE FORMAT"
+The check file is a plain text file that defines the spectral criteria. Each line specifies a single constraint.
+.P
+.B Format:
+<low_freq> <high_freq> <comparison> <threshold_db>
+.IP
+.B <low_freq>
+The lower bound of the frequency range in Hz.
+.IP
+.B <high_freq>
+The upper bound of the frequency range in Hz.
+.IP
+.B <comparison>
+The comparison operator. Can be one of the following:
+.RS
+.TP
+\fB<\fR
+Checks if all frequency components in the range are less than the threshold.
+.TP
+\fB>\fR
+Checks if all frequency components in the range are greater than the threshold.
+.TP
+\fB^\fR
+Checks if the peak frequency component in the range is greater than or equal to the threshold.
+.RE
+.IP
+.B <threshold_db>
+The threshold value in decibels.
+.P
+Lines starting with a # character are treated as comments. For a check to pass, all frequency components within the range must satisfy the condition.
+.SH AUTHOR
+Naoki Shibata and contributors.
+.SH "SEE ALSO"
+.BR ssrc (1)

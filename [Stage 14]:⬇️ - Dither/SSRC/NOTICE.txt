@@ -1,0 +1,7 @@
+This application uses the following third-party software.
+
+dr_wav
+
+* License: MIT No Attribution License
+* Source: https://github.com/mackron/dr_libs
+* Copyright: Copyright (c) 2016, David Reid

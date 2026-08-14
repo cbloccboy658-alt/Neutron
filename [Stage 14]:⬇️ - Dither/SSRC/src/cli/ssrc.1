@@ -1,0 +1,128 @@
+.\" Man page for ssrc
+.TH ssrc 1 "September 2025" "SSRC" "User Commands"
+.SH NAME
+ssrc \- An audiophile-grade sample rate converter
+.SH SYNOPSIS
+.B ssrc
+[\fIoptions\fR] \fI<source_file.wav>\fR \fI<destination_file.wav>\fR
+.br
+.B cat
+\fIinput.wav\fR | \fBssrc\fR \fB--stdin\fR [\fIoptions\fR] \fB--stdout\fR > \fIoutput.wav\fR
+.SH DESCRIPTION
+Shibatch Sample Rate Converter (SSRC) is a fast and high-quality sample rate converter for PCM WAV files. It is designed to efficiently handle the conversion between commonly used sampling rates such as 44.1kHz and 48kHz while ensuring minimal sound quality degradation.
+.P
+SSRC achieves its balance of speed and audio fidelity through a unique FFT-based algorithm, leveraging the SleefDFT library for high-speed Fourier transforms and SIMD (AVX-512) optimization for accelerated processing.
+.P
+Key features:
+.IP \(bu 2
+\fBHigh-Quality Conversion\fR: Achieves excellent audio quality with minimal artifacts using specialized high-order filters.
+.IP \(bu 2
+\fBSelectable Conversion Profile\fR: Allows selection of filter lengths and computing precision (single or double) to balance quality and speed.
+.IP \(bu 2
+\fBDithering Functionality\fR: Supports various dithering techniques, including noise shaping based on the absolute threshold of hearing (ATH) curve.
+.IP \(bu 2
+\fBLow-Latency Real-Time Processing\fR: Suitable for demanding real-time applications by combining minimum-phase filters with an efficient partitioned convolution algorithm.
+.SH OPTIONS
+.TP
+\fB--rate <sampling rate>\fR
+Specify the output sampling rate in Hz. Example: \fB48000\fR.
+.TP
+\fB--att <attenuation>\fR
+Attenuate the output signal in decibels (dB). Default: \fB0\fR.
+.TP
+\fB--bits <number of bits>\fR
+Specify the output quantization bit depth. Common values are \fB16\fR, \fB24\fR, \fB32\fR. Use \fB-32\fR or \fB-64\fR for 32-bit or 64-bit IEEE floating-point output. Default: \fB16\fR.
+.TP
+\fB--dither <type>\fR
+Select a dithering/noise shaping algorithm by ID. Use \fB--dither help\fR to see all available types.
+.TP
+\fB--mixChannels <matrix>\fR
+Mix, re-route, or change the number of channels. See the "CHANNEL MIXING" section below for details and examples.
+.TP
+\fB--minPhase\fR
+Use minimum-phase filters instead of the default linear-phase filters, which makes the processing delay negligible.
+.TP
+\fB--partConv <log2len>\fR
+Divide a long filter into smaller sub-filters so that they can be applied without significant processing delays.
+.TP
+\fB--st\fR
+Disable multithreading (enabled by default).
+.TP
+\fB--pdf <type> [<amp>]\fR
+Select a Probability Distribution Function (PDF) for dithering. \fB0\fR: Rectangular, \fB1\fR: Triangular. Default: \fB0\fR.
+.TP
+\fB--profile <name>\fR
+Select a conversion quality/speed profile. Use \fB--profile help\fR for details. Default: \fBstandard\fR.
+.TP
+\fB--dstContainer <name>\fR
+Specify the output file container type (\fBriff\fR, \fBw64\fR, \fBrf64\fR, etc.). Use \fB--dstContainer help\fR for options. Defaults to the source container or \fBriff\fR.
+.TP
+\fB--genImpulse ...\fR
+For testing. Generate an impulse signal instead of reading a file.
+.TP
+\fB--genSweep ...\fR
+For testing. Generate a sweep signal instead of reading a file.
+.TP
+\fB--stdin\fR
+Read audio data from standard input.
+.TP
+\fB--stdout\fR
+Write audio data to standard output.
+.TP
+\fB--quiet\fR
+Suppress informational messages.
+.TP
+\fB--debug\fR
+Print detailed debugging information during processing.
+.TP
+\fB--seed <number>\fR
+Set the random seed for dithering to ensure reproducible results.
+.SH "CONVERSION PROFILES"
+Profiles allow you to balance between conversion speed and quality (stop-band attenuation and filter length). Use \fBssrc --profile help\fR to see all profiles and their technical details.
+.TP
+\fBinsane\fR
+FFT: 262144, Attenuation: 200 dB, Precision: double. Highest possible quality, very slow.
+.TP
+\fBhigh\fR
+FFT: 65536, Attenuation: 170 dB, Precision: double. Excellent quality for audiophiles.
+.TP
+\fBlong\fR
+FFT: 32768, Attenuation: 145 dB, Precision: double. Superb quality.
+.TP
+\fBstandard\fR
+FFT: 16384, Attenuation: 145 dB, Precision: single. Great quality, default setting.
+.TP
+\fBshort\fR
+FFT: 4096, Attenuation: 96 dB, Precision: single. Good quality.
+.TP
+\fBfast\fR
+FFT: 1024, Attenuation: 96 dB, Precision: single. Good quality, suitable for most uses.
+.TP
+\fBlightning\fR
+FFT: 256, Attenuation: 96 dB, Precision: single. Low latency, suitable for real-time uses.
+.SH "CHANNEL MIXING"
+The \fB--mixChannels\fR option allows you to mix, re-route, or change the number of channels using a matrix string.
+.P
+The matrix string is a series of numbers separated by commas (,) and semicolons (;). Commas separate the gain values for each column in a row, and semicolons separate the rows. The number of rows in the matrix defines the number of output channels, and the number of columns must match the number of input channels.
+.SS "Example 1: Stereo to Mono Downmix"
+To combine a 2-channel stereo input into a 1-channel mono output, use a 1-row, 2-column matrix. The standard formula is Mono = 0.5 * Left + 0.5 * Right.
+.IP
+.B --mixChannels '0.5,0.5'
+.SS "Example 2: Mono to Stereo"
+To duplicate a 1-channel mono input into a 2-channel stereo output, use a 2-row, 1-column matrix.
+.IP
+.B --mixChannels '1;1'
+.SS "Example 3: Swapping Stereo Channels"
+To swap the left and right channels of a stereo file, you need a 2x2 matrix.
+.IP
+.B --mixChannels '0,1;1,0'
+.P
+The first row \fB0,1\fR means Output0 = (0 * Input0) + (1 * Input1). The second row \fB1,0\fR means Output1 = (1 * Input0) + (0 * Input1).
+.SH EXAMPLE
+Convert a WAV file from 44.1kHz to 48kHz with dithering:
+.P
+.B ssrc --rate 48000 --dither 0 input.wav output.wav
+.SH AUTHOR
+Naoki Shibata and contributors.
+.SH "SEE ALSO"
+.BR scsa (1)
