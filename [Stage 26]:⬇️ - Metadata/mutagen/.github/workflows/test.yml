@@ -1,0 +1,93 @@
+name: test
+
+on: [push, pull_request]
+
+permissions: {}
+
+jobs:
+
+  test:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14', 'pypy-3.11']
+        exclude:
+          # too slow
+          - os: macos-latest
+            python-version: pypy-3.11
+          - os: windows-latest
+            python-version: pypy-3.11
+        include:
+          - os: ubuntu-latest
+            pip-cache: ~/.cache/pip
+            uv-cache: ~/.cache/uv
+          - os: macos-latest
+            pip-cache: ~/Library/Caches/pip
+            uv-cache: ~/.cache/uv
+          - os: windows-latest
+            pip-cache: ~\AppData\Local\pip\Cache
+            uv-cache: ~\AppData\Local\uv\cache
+          - os: ubuntu-latest
+            python-version: 3.10
+            build-docs: true
+          - os: ubuntu-latest
+            python-version: 3.12
+            build-docs: true
+            build-dist: true
+          - python-version: 3.12
+            run-mypy: true
+    steps:
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      with:
+        persist-credentials: false
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      with:
+        python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
+
+    - uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+      with:
+        path: |
+          ${{ matrix.pip-cache }}
+          ${{ matrix.uv-cache }}
+        key: ${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-
+
+    - name: Install dependencies
+      run: |
+        pipx install uv build
+        uv sync
+    - name: Run tests
+      run: |
+        uv run coverage run --branch -m pytest
+        uv run coverage xml -i
+    - name: Run mypy
+      if: matrix.run-mypy
+      run: |
+        uv run mypy .
+    - name: Run flake8
+      run: |
+        uv run flake8
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+    - name: Build docs
+      if: matrix.build-docs
+      run: |
+        uv sync --group docs
+        uv run sphinx-build -W -a -E -b html -n docs docs/_build
+    - name: Build dist
+      if: matrix.build-dist
+      run: |
+        pyproject-build
+    - name: Upload dist
+      if: matrix.build-dist
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: dist
+        path: dist/*
