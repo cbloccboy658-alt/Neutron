@@ -1,0 +1,166 @@
+site_name: KFR
+theme:
+  name: "material"
+  custom_dir: custom
+  features:
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+    - navigation.indexes
+    - navigation.prune
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra:
+  search:
+    language: en
+
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: "https://github.com/kfrlib"
+    - icon: fontawesome/brands/twitter
+      link: "https://twitter.com/kfrlib"
+
+copyright: "Copyright &copy; 2016 - 2026 KFR"
+
+validation:
+  links:
+    absolute_links: relative_to_docs
+
+plugins:
+  - search
+  - privacy
+  - gh-admonitions
+  - cxxdox:
+      title: KFR API Reference
+      path_prefix: auto/
+      input:
+        - include:
+            - ../include/kfr/all.hpp # relative to mkdocs.yml
+          exclude:
+            - ../include/kfr/thirparty
+            - "*/impl/*"
+          exclude_symbols:
+            - "*::intr::*"
+            - "*::internal::*"
+            - "*::details::*"
+            - "*::fn::*"
+            - "*::internal_generic::*"
+            - "tl::*"
+          hide_tokens:
+            - KFR_INLINE
+            - KFR_INTRINSIC
+            - KFR_MEM_INTRINSIC
+            - KFR_FUNCTION
+            - KFR_INTRINSIC
+            - KFR_MEM_INTRINSIC
+            - KFR_UNUSED
+            - KFR_INLINE
+            - KFR_API_SPEC
+          compile_options:
+            - -std=c++20
+            - "-DDOCUMENTATION"
+            - "-DKFR_FORCE_GENERIC_CPU=1"
+            - "-I../include"
+        - include:
+            - ../include/kfr/capi.h # relative to mkdocs.yml
+          hide_tokens:
+            - KFR_INLINE
+            - KFR_INTRINSIC
+            - KFR_MEM_INTRINSIC
+            - KFR_FUNCTION
+            - KFR_INTRINSIC
+            - KFR_MEM_INTRINSIC
+            - KFR_UNUSED
+            - KFR_INLINE
+            - KFR_API_SPEC
+          compile_options:
+            - -std=c99
+            - "-DDOCUMENTATION"
+            - "-I../include"
+  - minify:
+      minify_html: true
+      htmlmin_opts:
+          remove_comments: true
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.details
+  - pymdownx.magiclink
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra_javascript:
+  - js/math.js
+  - https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js
+
+extra_css:
+  - https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css
+  - css/fix.css
+
+repo_url: https://github.com/kfrlib/kfr
+repo_name: KFR
+edit_uri: edit/main/docs/
+
+nav:
+  - KFR:
+      - index.md
+      - whatsnew7.md
+      - installation.md
+      - basics.md
+      - expressions.md
+      - handle.md
+      - capi.md
+      - upgrade7.md
+      - benchmarking.md
+      - kb.md
+  - DSP:
+      - fir.md
+      - bq.md
+      - src.md
+      - conv_reverb.md
+      - ebur128.md
+      - conversion.md
+      - normalize.md
+      - convert_stereo.md
+      - fir_gallery.md
+      - iir_gallery.md
+      - bq_gallery.md
+      - src_gallery.md
+      - window_gallery.md
+      - convolution.md
+      - dsp_glossary.md
+  - DFT:
+      - dft.md
+      - dft2.md
+      - dft_format.md
+  - I/O:
+      - read_audio.md
+      - file_support.md
+      - plot.md
+  - API Reference:
+      - auto/index.md
+
+  - kfr.dev: https://kfr.dev
