@@ -1,0 +1,42 @@
+2018-02-15 (v0.4.0) Robin Gareus <robin@gareus.org>
+* add support for byte-offset unit
+* add option to displays an initial silence-state (for live streams)
+
+2017-02-15 (v0.3.3) Robin Gareus <robin@gareus.org>
+* update ffmpeg compat (fixes crashes with recent ffmpeg/libav)
+* support ffmpeg avcodec_decode_audio4() API
+* work around libsndfile's lack of file-URL support.
+
+2013-06-03 (v0.3.2) Robin Gareus <robin@gareus.org>
+* add fast-scan mode (seek forward/backward)
+* regularly flush output -- make silan work with live-streams
+* code optimizations
+* add static-build scripts
+
+2013-03-05 (v0.3.1) Robin Gareus <robin@gareus.org>
+* add total file duration to JSON output
+* ffmpeg backwards compatibilty for debian/squeeze and Ubuntu/Lucid
+
+2013-01-10 (v0.3.0) Robin Gareus <robin@gareus.org>
+* add support for JSON output
+* separate format (-f) and unit (-u) options.
+* fix off-by-one error in holdoff compensation
+* always end with a "Sound off"
+* cleaned up and documented audio-decoder library
+* remove explicit flac support (libav and libsndfile can read it)
+* add GPLv2 and LGPLv2.1 boilerplates
+
+2012-12-30 (v0.2.0) Robin Gareus <robin@gareus.org>
+* change default output format to seconds
+* add print --bounds only feature
+
+2012-10-01 (v0.1.1) Robin Gareus <robin@gareus.org>
+* high-pass filter
+* holdoff delay
+* cleanup output, use stderr for all info, don't clutter data-out
+* audacity label-file-format output
+
+2012-10-01 (v0.1.0) Robin Gareus <robin@gareus.org>
+* started project based on SampleCat's audio-decoder
+* basic silence detection
+* simple output
