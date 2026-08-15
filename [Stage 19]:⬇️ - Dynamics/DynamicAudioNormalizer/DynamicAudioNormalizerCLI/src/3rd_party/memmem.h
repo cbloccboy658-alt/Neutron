@@ -39,7 +39,7 @@
 #define _EXPECT(X,Y) (X)
 #endif
 
-static const void *memmem(const void *haystack, size_t n, const void *needle, size_t m)
+static const void *memmem_nsn(const void *haystack, size_t n, const void *needle, size_t m)
 {
 	if ((m > n) || (!m) || (!n))
 	{

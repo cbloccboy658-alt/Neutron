@@ -52,6 +52,7 @@ CXXFLAGS += -I./src
 CXXFLAGS += -I./include
 CXXFLAGS += -I../DynamicAudioNormalizerAPI/include
 CXXFLAGS += -I../DynamicAudioNormalizerShared/include
+CXXFLAGS += $(shell pkg-config --cflags opusfile)
 
 ifeq ($(findstring MINGW,$(shell uname -s)),MINGW)
    CXXFLAGS += -I../../libsndfile/include
@@ -64,7 +65,7 @@ LDXFLAGS += -L../DynamicAudioNormalizerAPI/lib
 LDXFLAGS += -lDynamicAudioNormalizerAPI-$(API_VERSION)
 
 #Externel libraries
-LDXFLAGS += -lsndfile -lmpg123
+LDXFLAGS += -lsndfile -lmpg123 $(shell pkg-config --libs opusfile opus ogg)
 
 ##############################################################################
 # File Names

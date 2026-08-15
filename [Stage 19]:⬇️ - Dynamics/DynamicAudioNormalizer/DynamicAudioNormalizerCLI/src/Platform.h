@@ -323,6 +323,7 @@ inline static const CHR *STRNCAT(CHR *const buff, const CHR *const str, const ui
 #error Whoops, more than one platform has been detected!
 #endif
 
+#include <fcntl.h>
 #include <unistd.h>
 
 #define _TXT(X) X
@@ -346,6 +347,11 @@ inline static int PRINT(const CHR *const format, ...)
 	return result;
 }
 
+inline static int PUTS(const CHR *const text)
+{
+	return fputs(text, stderr);
+}
+
 inline static void FLUSH(void)
 {
 	fflush(stderr);
@@ -354,6 +360,16 @@ inline static void FLUSH(void)
 inline static FILE *FOPEN(const CHR *const fileName, const CHR *const mode)
 {
 	return fopen(fileName, mode);
+}
+
+inline static int OPEN(const CHR *const fileName, const int flags)
+{
+	return open(fileName, flags);
+}
+
+inline static int CLOSE(const int fd)
+{
+	return close(fd);
 }
 
 inline static int FILENO(FILE *const file)

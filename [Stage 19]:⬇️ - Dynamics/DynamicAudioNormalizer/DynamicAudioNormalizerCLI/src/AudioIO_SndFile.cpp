@@ -525,9 +525,9 @@ bool AudioIO_SndFile_Private::checkFileType(FILE *const file)
 		{
 			return true;
 		}
-		if (const uint8_t *pos_oggs = (const uint8_t*)memmem(&buffer[0], count, "OggS\0", 5))
+		if (const uint8_t *pos_oggs = (const uint8_t*)memmem_nsn(&buffer[0], count, "OggS\0", 5))
 		{
-			if (memmem(pos_oggs + 5, count - ((pos_oggs + 5) - &buffer[0]), "vorbis", 6) != NULL)
+			if (memmem_nsn(pos_oggs + 5, count - ((pos_oggs + 5) - &buffer[0]), "vorbis", 6) != NULL)
 			{
 				return true;
 			}
