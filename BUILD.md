@@ -17,6 +17,8 @@ nonzero if any requested stage failed.
 Overridable: `BUILD_ROOT`, `LOG_DIR`, `STATUS_FILE`, `JOBS`, `PYTHON`,
 `PYTHON312`.
 
+All 27 stages build on Ubuntu 22.04 with the toolchain below.
+
 ## Toolchain requirements
 
 | Requirement | Needed by |
